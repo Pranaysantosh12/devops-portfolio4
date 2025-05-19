@@ -1,8 +1,8 @@
-# Use an official Nginx image
+# Use a lightweight web server image
 FROM nginx:alpine
 
-# Copy HTML files to Nginx HTML directory
+# Copy website files to Nginx's public folder
 COPY . /usr/share/nginx/html
 
-# Expose port
+# Expose port 80
 EXPOSE 80

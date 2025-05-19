@@ -2,26 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage('Clone Repository') {
             steps {
-                git 'https://github.com/Pranaysantosh12/devops-portfolio.git'
+                git credentialsId: 'jenkins-tokenv2', url: 'https://github.com/Pranaysantosh12/devops-portfolio.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                script {
-                    sh 'docker build -t devops-portfolio .'
-                }
+                echo 'No build step needed for static portfolio.'
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Deploy') {
             steps {
-                script {
-                    sh 'docker run -d -p 8080:80 devops-portfolio'
-                }
+                echo 'Static site ready. In real-world, this would be deployed to a server like Nginx.'
             }
         }
     }
 }
+
+
+  

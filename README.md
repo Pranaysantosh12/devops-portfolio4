@@ -1,19 +1,24 @@
-# DevOps Portfolio Project
+# DevOps Portfolio
 
-## 🔧 Technologies Used
+This is a DevOps-based personal portfolio website with interactive features.
+
+## Features
+- Interactive HTML/CSS/JS frontend
+- GitHub integration
+- CI/CD using Jenkins
+- Optional Docker deployment
+- Nginx as a web server
+
+## Technologies
 - HTML, CSS, JavaScript
-- Docker
+- Git & GitHub
 - Jenkins
-- GitHub
+- Docker (optional)
+- Nginx
 
-## 📦 Project Structure
-Static portfolio website with DevOps CI/CD pipeline using Jenkins and Docker.
+## How to Run
+- Open `index.html` directly in browser
+- Or deploy using Jenkins to a server path like `/var/www/html`
 
-## 🚀 How to Run
-1. Clone the repo
-2. Build Docker image: `docker build -t devops-portfolio .`
-3. Run container: `docker run -d -p 8080:80 devops-portfolio`
-4. Access at: `http://localhost:8080`
 
-## 🛠 Jenkins Setup
-This project uses a Jenkinsfile to automate build and deployment.
+
