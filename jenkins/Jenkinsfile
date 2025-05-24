@@ -9,25 +9,32 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git', branch: 'master', credentialsId: 'jenkins-tokenv2'
+                git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
+                    branch: 'master',
+                    credentialsId: 'jenkins-tokenv2'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $IMAGE_NAME:$TAG .'
+                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
                 }
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
                     script {
                         sh """
-                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
-                        docker push $IMAGE_NAME:$TAG
+                        echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
+                        docker push ${IMAGE_NAME}:${TAG}
+                        docker logout
                         """
                     }
                 }
@@ -37,17 +44,17 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh 'kubectl apply -f k8s-deployment.yaml'
+                    // Optional: Ensure kubeconfig is set up before running this step
+                    sh '''
+                    if kubectl apply -f k8s-deployment.yaml; then
+                        echo "Deployment applied successfully."
+                    else
+                        echo "Deployment failed!" >&2
+                        exit 1
+                    fi
+                    '''
                 }
             }
         }
     }
 }
-
-
-
-  
-
-
-
-  
