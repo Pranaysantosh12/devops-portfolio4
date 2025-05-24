@@ -1,26 +1,53 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'pranaysantosh/devops-portfolio'
+        TAG = 'latest'
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'jenkins-tokenv2', url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git'
+                git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git', branch: 'master', credentialsId: 'jenkins-tokenv2'
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'No build step needed for static portfolio.'
+                script {
+                    sh 'docker build -t $IMAGE_NAME:$TAG .'
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Push to DockerHub') {
             steps {
-                echo 'Static site ready. In real-world, this would be deployed to a server like Nginx.'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    script {
+                        sh """
+                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                        docker push $IMAGE_NAME:$TAG
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh 'kubectl apply -f k8s-deployment.yaml'
+                }
             }
         }
     }
 }
+
+
+
+  
+
 
 
   
