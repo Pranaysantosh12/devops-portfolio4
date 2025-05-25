@@ -2,61 +2,56 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME = 'devops-portfolio'
-        K8S_MANIFEST = 'k8s-deployment.yaml'
+        IMAGE_NAME = 'fake-docker-image/devops-portfolio'
+        TAG = 'latest'
     }
 
     stages {
         stage('Step 1: Clone Repository') {
             steps {
-                echo '📥 Cloning GitHub repo...'
+                echo '📥 Cloning GitHub repository...'
                 git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
                     branch: 'master',
                     credentialsId: 'jenkins-tokenv2'
             }
         }
 
-        stage('Step 2: Confirm Files') {
+        stage('Step 2: Simulate Docker Build') {
             steps {
-                echo '📂 Showing project file structure...'
-                dir('.') {
-                    script {
-                        def files = []
-                        new File(".").eachFile { file ->
-                            files << file.name
-                        }
-                        echo "Files in project:\n" + files.join('\n')
-                    }
-                }
+                echo '🐳 Simulating Docker build...'
+                echo "Pretending to run: docker build -t ${IMAGE_NAME}:${TAG} ."
+                echo "Build successful ✅"
             }
         }
 
-        stage('Step 3: Simulate Docker Build') {
+        stage('Step 3: Simulate Docker Push') {
             steps {
-                echo '🐳 Docker simulation (Docker not available)...'
-                echo "Simulated build of image: ${PROJECT_NAME}:latest"
+                echo '📤 Simulating DockerHub push...'
+                echo "Pretending to push ${IMAGE_NAME}:${TAG} to DockerHub"
+                echo "Push successful ✅"
             }
         }
 
-        stage('Step 4: Simulate Kubernetes Deployment') {
+        stage('Step 4: Simulate Kubernetes Deploy') {
             steps {
-                echo '📦 Simulating kubectl apply using manifest...'
-                echo "Would apply file: ${K8S_MANIFEST}"
-                echo '✅ Simulated: kubectl apply -f k8s-deployment.yaml'
+                echo '🚀 Simulating Kubernetes deployment...'
+                echo 'Pretending to run: kubectl apply -f k8s-deployment.yaml'
+                echo 'Kubernetes deployment successful ✅'
             }
         }
 
-        stage('Step 5: Archive Artifacts') {
+        stage('Step 5: Archive Web App (Design + Output)') {
             steps {
-                echo '🗃️ Archiving project files for download/view...'
-                archiveArtifacts artifacts: '*.html', fingerprint: true
+                echo '📦 Archiving HTML files so teacher can view them from Jenkins...'
+                archiveArtifacts artifacts: '*.html', onlyIfSuccessful: true
             }
         }
 
-        stage('Step 6: Confirmation') {
+        stage('Step 6: Final Confirmation') {
             steps {
-                echo '✅ Pipeline completed. Open "index.html" from artifacts tab.'
+                echo '✅ All steps simulated. Teacher can now view design in Jenkins artifacts tab.'
             }
         }
     }
 }
+Sent from my iPhone
