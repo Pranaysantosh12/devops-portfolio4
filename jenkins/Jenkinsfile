@@ -18,7 +18,9 @@ pipeline {
         stage('Install Node.js') {
             steps {
                 script {
-                    nodejs('NodeJS') // Ensure this matches the name configured in Jenkins
+                    nodejs('NodeJS') { // Ensure this matches the name configured in Jenkins
+                        // Add any Node.js commands you need to run here
+                    }
                 }
             }
         }
@@ -26,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+                    bat "docker build -t ${IMAGE_NAME}:${TAG} ." // Use 'bat' for Windows
                 }
             }
         }
@@ -39,8 +41,8 @@ pipeline {
                     passwordVariable: 'PASSWORD'
                 )]) {
                     script {
-                        sh """
-                        echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
+                        bat """
+                        echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin
                         docker push ${IMAGE_NAME}:${TAG}
                         docker logout
                         """
@@ -52,8 +54,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Optional: Ensure kubeconfig is set up before running this step
-                    sh '''
+                    bat '''
                     if kubectl apply -f k8s-deployment.yaml; then
                         echo "Deployment applied successfully."
                     else
