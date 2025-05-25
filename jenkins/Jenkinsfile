@@ -4,49 +4,58 @@ pipeline {
     environment {
         IMAGE_NAME = 'devops-portfolio'
         TAG = 'v1'
-        YAML_FILE = 'k8s-deployment.yaml'
+        DEPLOYMENT_FILE = 'k8s-deployment.yaml'
     }
 
     stages {
-
-        stage('Clone Repository') {
+        stage('Step 1: Clone Repository') {
             steps {
-                git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
+                echo 'Cloning GitHub repo...'
+                git(
+                    url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
                     branch: 'master',
                     credentialsId: 'jenkins-tokenv2'
+                )
             }
         }
 
-        stage('Archive Artifacts') {
+        stage('Step 2: Confirm Project Files') {
             steps {
-                archiveArtifacts artifacts: '*.html', fingerprint: true
+                echo 'Files cloned:'
+                script {
+                    def files = new File('.').list()
+                    files.each { file -> echo "  - ${file}" }
+                }
             }
         }
 
-        stage('Build (Simulated Container)') {
+        stage('Step 3: Build Image (simulate without Docker Desktop)') {
             steps {
-                echo "Simulating container build for ${IMAGE_NAME}:${TAG}..."
-                echo "✅ Dockerfile exists in the project root (make sure it's there)."
-                echo "ℹ️ If Docker/Podman is not available, consider it simulated for approval."
+                echo '⚠️ Docker Desktop not available — skipping actual build'
+                echo '🛠️ Simulating: docker build -t ${IMAGE_NAME}:${TAG} .'
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Step 4: Kubernetes Deployment') {
             steps {
-                echo "Deploying using Kubernetes manifest..."
-                echo "kubectl apply -f ${YAML_FILE}"
-                echo "✅ Your app would now be deployed if a cluster is configured."
+                echo 'Deploying to Kubernetes using the YAML file...'
+                script {
+                    try {
+                        def status = "kubectl apply -f ${DEPLOYMENT_FILE}".execute().text
+                        echo status
+                    } catch (Exception e) {
+                        error("❌ Kubernetes deployment failed: ${e.message}")
+                    }
+                }
             }
         }
 
-        stage('Summary') {
+        stage('Step 5: Confirmation') {
             steps {
-                echo "✅ Pipeline completed successfully!"
-                echo "Your container was built and deployed to Kubernetes (simulated)."
+                echo '✅ Jenkins pipeline executed with visible stages and Kubernetes deployment!'
             }
         }
     }
 }
-
    
                   
