@@ -20,6 +20,7 @@ pipeline {
                 script {
                     nodejs('NodeJS') { // Ensure this matches the name configured in Jenkins
                         // Add any Node.js commands you need to run here
+                        // For example, you can run npm install or any other command
                     }
                 }
             }
@@ -67,3 +68,5 @@ pipeline {
         }
     }
 }
+   
+                  
