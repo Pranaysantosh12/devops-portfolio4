@@ -3,71 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My DevOps Portfolio</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>DevOps Portfolio - Pranay Santosh</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #1f4037, #99f2c8);
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       margin: 0;
       color: #fff;
       text-align: center;
     }
 
     header {
-      padding: 30px 0;
-      background-color: rgba(0, 0, 0, 0.5);
+      padding: 40px 0 20px;
+      background-color: rgba(0, 0, 0, 0.6);
     }
 
     nav a {
-      margin: 0 15px;
+      margin: 0 20px;
       text-decoration: none;
       color: #fff;
       font-weight: 600;
+      font-size: 16px;
     }
 
     h1 {
-      font-size: 2.5em;
+      font-size: 3em;
       margin-bottom: 10px;
     }
 
-    h2 {
-      font-weight: normal;
-      margin-top: 50px;
+    .tagline {
+      font-size: 1.3em;
+      color: #b2bec3;
     }
 
-    button {
-      margin-top: 20px;
-      padding: 12px 24px;
+    .card {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin: 40px auto;
+      padding: 30px;
+      max-width: 700px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      margin-bottom: 15px;
+      font-size: 1.8em;
+    }
+
+    .card p {
+      font-size: 1.1em;
+      line-height: 1.6em;
+    }
+
+    .launch-btn {
+      margin-top: 30px;
+      padding: 15px 30px;
       font-size: 1em;
       background-color: #ff6f61;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
-      background-color: #ff4b3e;
-    }
-
-    #demo {
-      margin-top: 20px;
-      font-size: 1.2em;
+    .launch-btn:hover {
+      background-color: #ff3e32;
     }
 
     footer {
-      margin-top: 50px;
+      margin-top: 60px;
       padding: 20px;
       background-color: rgba(0, 0, 0, 0.3);
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
+
   <header>
-    <h1>Welcome to My DevOps Portfolio</h1>
+    <h1>Pranay's DevOps Portfolio</h1>
+    <p class="tagline">CI/CD | Jenkins | Docker | Kubernetes | Cloud</p>
     <nav>
       <a href="about.html">About</a>
       <a href="projects.html">Projects</a>
@@ -75,18 +92,17 @@
     </nav>
   </header>
 
-  <main>
-    <h2>This is a live interactive DevOps Project</h2>
-    <button onclick="changeText()">Click Me!</button>
-    <p id="demo">Hello!</p>
+  <main class="card">
+    <h2>🚀 Live DevOps Project Demo</h2>
+    <p>This portfolio showcases a full CI/CD pipeline using Jenkins, Docker, and Kubernetes — deployed seamlessly from GitHub to Kubernetes clusters.</p>
+    <p>Explore the latest features, real-time deployment steps, and DevOps best practices applied practically.</p>
+    <button class="launch-btn" onclick="window.location.href='projects.html'">Launch Portfolio</button>
   </main>
 
   <footer>
-    &copy; 2025 Pranay Santosh | DevOps Enthusiast
+    &copy; 2025 Pranay Santosh | DevOps | Made with ❤️
   </footer>
 
-  <script src="js/script.js"></script>
 </body>
 </html>
-
 
