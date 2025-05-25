@@ -18,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+                    bat "docker build -t ${IMAGE_NAME}:${TAG} ."
                 }
             }
         }
@@ -31,8 +31,8 @@ pipeline {
                     passwordVariable: 'PASSWORD'
                 )]) {
                     script {
-                        sh """
-                        echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
+                        bat """
+                        echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin
                         docker push ${IMAGE_NAME}:${TAG}
                         docker logout
                         """
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     // Optional: Ensure kubeconfig is set up before running this step
-                    sh '''
+                    bat '''
                     if kubectl apply -f k8s-deployment.yaml; then
                         echo "Deployment applied successfully."
                     else
