@@ -1,161 +1,68 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs "NodeJS" // Make sure NodeJS is configured in Jenkins Global Tool Configuration
-    }
-    
+
     environment {
-        APP_NAME = 'devops-portfolio'
-        PORT = '3000'
-        NODE_ENV = 'production'
+        IMAGE_NAME = 'pranaysantosh/devops-portfolio'
+        TAG = 'latest'
     }
-    
+
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'jenkins-tokenv2', 
-                    url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git'
+                git url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
+                    branch: 'master',
+                    credentialsId: 'jenkins-tokenv2'
             }
         }
-        
-        stage('Check Node.js Environment') {
-            steps {
-                bat '''
-                    echo Checking Node.js environment...
-                    node --version
-                    npm --version
-                    echo Current directory: %CD%
-                    dir
-                '''
-            }
-        }
-        
-        stage('Install Dependencies') {
-            steps {
-                bat '''
-                    echo Installing dependencies...
-                    npm cache clean --force
-                    npm install
-                '''
-            }
-        }
-        
-        stage('Fix Source Map Issues') {
+
+        stage('Install Node.js') {
             steps {
                 script {
-                    bat '''
-                        echo Fixing source map issues...
-                        npm uninstall tippy.js
-                        npm install tippy.js
-                        echo Source map issues resolved
-                    '''
+                    nodejs('NodeJS') // Ensure this matches the name configured in Jenkins
                 }
             }
         }
-        
-        stage('Run Tests') {
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    bat '''
-                        echo Running tests...
-                        npm test || echo "No tests configured or tests failed - continuing..."
-                    '''
+                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
                 }
             }
         }
-        
-        stage('Build Application') {
+
+        stage('Push to DockerHub') {
             steps {
-                bat '''
-                    echo Building application...
-                    set GENERATE_SOURCEMAP=false
-                    npm run build || echo "No build script found - skipping build..."
-                '''
-            }
-        }
-        
-        stage('Stop Existing Application') {
-            steps {
-                script {
-                    bat '''
-                        echo Stopping existing application...
-                        for /f "tokens=5" %%a in ('netstat -aon ^| find ":3000" ^| find "LISTENING"') do (
-                            echo Killing process %%a running on port 3000
-                            taskkill /F /PID %%a 2>nul || echo "No process to kill"
-                        )
-                        timeout /t 3 /nobreak
-                    '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
+                    script {
+                        sh """
+                        echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
+                        docker push ${IMAGE_NAME}:${TAG}
+                        docker logout
+                        """
+                    }
                 }
             }
         }
-        
-        stage('Deploy Application') {
+
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    bat '''
-                        echo Starting application...
-                        set NODE_ENV=production
-                        set PORT=3000
-                        
-                        REM Start the application in background
-                        start /MIN "DevOps Portfolio" cmd /c "npm start"
-                        
-                        echo Application started on port 3000
-                        timeout /t 5 /nobreak
+                    // Optional: Ensure kubeconfig is set up before running this step
+                    sh '''
+                    if kubectl apply -f k8s-deployment.yaml; then
+                        echo "Deployment applied successfully."
+                    else
+                        echo "Deployment failed!" >&2
+                        exit 1
+                    fi
                     '''
                 }
             }
-        }
-        
-        stage('Health Check') {
-            steps {
-                script {
-                    bat '''
-                        echo Performing health check...
-                        timeout /t 10 /nobreak
-                        
-                        REM Check if application is responding
-                        curl -f http://localhost:3000 || (
-                            echo Health check failed - checking if process is running...
-                            netstat -an | find ":3000"
-                            echo Application may still be starting up...
-                        )
-                        
-                        echo Health check completed
-                    '''
-                }
-            }
-        }
-    }
-    
-    post {
-        success {
-            echo '''
-            ================================
-            🎉 DEPLOYMENT SUCCESSFUL! 🎉
-            ================================
-            Your DevOps Portfolio is now running at:
-            http://localhost:3000
-            ================================
-            '''
-        }
-        failure {
-            echo '''
-            ================================
-            ❌ DEPLOYMENT FAILED ❌
-            ================================
-            Check the logs above for errors
-            ================================
-            '''
-        }
-        always {
-            echo 'Cleaning up...'
-            bat '''
-                REM Clean up temporary files if any
-                if exist npm-debug.log del npm-debug.log
-                echo Pipeline execution completed.
-            '''
         }
     }
 }
