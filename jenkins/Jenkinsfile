@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Step 1: Clone Repository') {
             steps {
-                echo 'Cloning GitHub repo...'
+                echo '📥 Cloning GitHub repo...'
                 git(
                     url: 'https://github.com/Pranaysantosh12/devops-portfolio4.git',
                     branch: 'master',
@@ -19,30 +19,34 @@ pipeline {
             }
         }
 
-        stage('Step 2: Confirm Project Files') {
+        stage('Step 2: Confirm Files (safe way)') {
             steps {
-                echo 'Files cloned:'
+                echo '🧾 Showing project file list:'
                 script {
-                    def files = new File('.').list()
-                    files.each { file -> echo "  - ${file}" }
+                    def fileList = ''
+                    def process = 'ls -1'.execute()
+                    process.waitFor()
+                    fileList = process.in.text
+                    echo fileList
                 }
             }
         }
 
-        stage('Step 3: Build Image (simulate without Docker Desktop)') {
+        stage('Step 3: Simulate Docker Build') {
             steps {
-                echo '⚠️ Docker Desktop not available — skipping actual build'
-                echo '🛠️ Simulating: docker build -t ${IMAGE_NAME}:${TAG} .'
+                echo '⚙️ Simulating Docker build (no Docker Desktop)...'
+                echo "Command would be: docker build -t ${IMAGE_NAME}:${TAG} ."
             }
         }
 
         stage('Step 4: Kubernetes Deployment') {
             steps {
-                echo 'Deploying to Kubernetes using the YAML file...'
+                echo '🚀 Deploying to Kubernetes...'
                 script {
                     try {
-                        def status = "kubectl apply -f ${DEPLOYMENT_FILE}".execute().text
-                        echo status
+                        def result = "kubectl apply -f ${DEPLOYMENT_FILE}".execute()
+                        result.waitFor()
+                        echo result.in.text
                     } catch (Exception e) {
                         error("❌ Kubernetes deployment failed: ${e.message}")
                     }
@@ -52,10 +56,8 @@ pipeline {
 
         stage('Step 5: Confirmation') {
             steps {
-                echo '✅ Jenkins pipeline executed with visible stages and Kubernetes deployment!'
+                echo '✅ Pipeline completed successfully with all steps.'
             }
         }
     }
 }
-   
-                  
